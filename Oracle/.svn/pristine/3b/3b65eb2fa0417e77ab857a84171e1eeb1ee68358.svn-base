@@ -1,0 +1,67 @@
+package mis.action;
+
+import mis.dao.ProgressDAO;
+import mis.entity.Progress;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import antlr.StringUtils;
+import common.BaseAction;
+import freemarker.template.utility.StringUtil;
+
+//业务处理Action
+
+//action是多实例的，对每一个请求都会new一个action,所以不必担心，参数会冲突
+@SuppressWarnings("serial")
+@Results( { @Result(name = "myProgress", location = "/WEB-INF/myProgress.jsp"),                              //登录
+	        
+	})
+public class ProgressAction extends BaseAction {
+	// ///////////////////////////////////////////////////////////////引入的DAO
+	//spring自动注入
+	@Autowired  
+	private ProgressDAO dao;
+	
+	private Progress entity;
+
+	
+	public String myProgress(){
+		try {
+			
+		
+		String userId = getRequest().getParameter("userId");
+		if(userId!=null && userId!=""){
+			List<Object> objs = new ArrayList<Object>();
+			objs.add(Integer.parseInt(userId));
+			List<Progress> list = dao.getListByHQL("from Progress p where 1=1 and p.userId = ?", objs);
+			getRequest().setAttribute("myProgress", list);
+			return "myProgress";
+		}
+		else {
+			return "login";
+		}
+		} catch (Exception e) {
+			// TODO: handle exception
+			return "login";
+		}
+		
+		
+	}
+	
+	
+	
+	
+	public Progress getEntity() {
+		return entity;
+	}
+
+	public void setEntity(Progress entity) {
+		this.entity = entity;
+	} 
+	
+}

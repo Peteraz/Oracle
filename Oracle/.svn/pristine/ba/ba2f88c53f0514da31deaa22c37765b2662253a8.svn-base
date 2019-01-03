@@ -1,0 +1,91 @@
+package mis.action;
+
+import mis.dao.ProgressDAO;
+import mis.dao.UserDAO;
+import mis.entity.Progress;
+import mis.entity.User;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import antlr.StringUtils;
+import common.BaseAction;
+import freemarker.template.utility.StringUtil;
+
+//业务处理Action
+
+//action是多实例的，对每一个请求都会new一个action,所以不必担心，参数会冲突
+@SuppressWarnings("serial")
+@Results( { @Result(name = "myProgress", location = "/WEB-INF/myProgress.jsp"),                              //进价
+	        @Result(name = "login", location = "/login.jsp")                                                 //登录
+	        
+	})
+public class ProgressAction extends BaseAction {
+	// ///////////////////////////////////////////////////////////////引入的DAO
+	//spring自动注入
+	@Autowired  
+	private ProgressDAO dao;
+	@Autowired  
+	private UserDAO udao;
+	// 拿实体类当组合参数，实际上是它的属性帮我们传参了，常用
+	private Progress entity;
+
+	
+	//添加进度
+	public void addProgress() throws Exception{
+		String userId = getRequest().getParameter("uid");
+		String type = getRequest().getParameter("type");
+		String frequency = getRequest().getParameter("frequency");
+		String createTime = getRequest().getParameter("createTime");
+		String isPass = getRequest().getParameter("isPass");
+		
+		Progress pro=new Progress();
+		pro.setUserId(Integer.valueOf(userId));
+		pro.setType(type);
+		pro.setFrequency(Integer.valueOf(frequency));
+		pro.setCreateTime(createTime);
+		pro.setIsPass(Integer.valueOf(isPass));
+		dao.add(pro);
+		
+		User user=new User();
+		user=udao.get(Integer.valueOf(userId));
+		user.setType(type);
+		udao.update(user);
+		getResponse().getWriter().write("成功");
+	}
+	
+	//我的进度
+	public String myProgress(){
+		try {				
+			String userId = getRequest().getParameter("uid");
+			if(userId!=null && userId!=""){
+				List<Object> objs = new ArrayList<Object>();
+				objs.add(Integer.parseInt(userId));
+				List<Progress> list = dao.getListByHQL("from Progress p where 1=1 and p.userId = ?", objs);
+				getRequest().setAttribute("myProgress", list);
+				return "myProgress";
+			}	
+			else {
+				return "login";
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			return "login";
+		}	
+		
+	}	
+	
+	////////////////////////////////////////////////////////////////////实现get/set
+	public Progress getEntity() {
+		return entity;
+	}
+
+	public void setEntity(Progress entity) {
+		this.entity = entity;
+	} 
+	
+}

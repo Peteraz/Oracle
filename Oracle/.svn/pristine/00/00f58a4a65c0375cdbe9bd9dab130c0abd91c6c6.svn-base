@@ -1,0 +1,57 @@
+package mis.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import mis.entity.User;
+
+import org.springframework.stereotype.Repository;
+
+import common.BaseDAO;
+
+//业务逻辑DAO
+
+//spring自动注入
+@Repository
+public class UserDAO extends BaseDAO<User> {
+
+	public User login(String name,String pwd)
+	{
+		User result=null;
+		String hql = "from User n where 1=1 ";
+
+		List<Object> obj = new ArrayList<Object>();
+
+		if (name != null && !name.equals("")) {
+			hql += "and n.username = ? "; // 组合hql
+			obj.add(name); // 组合参数
+		}
+		if (pwd != null && !pwd.equals("")) {
+			hql += "and n.password=?";
+			obj.add(pwd);
+		}
+
+		List<User> lu=this.getListByHQL(hql, obj); // 使用basedao封装的getListByHQL
+        if(lu!=null&&lu.size()>0)
+		  result=lu.get(0);
+		return result;
+		
+	}
+		 	
+    public String getIpAddr(HttpServletRequest request) { 
+        String ip = request.getHeader("x-forwarded-for"); 
+        if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) { 
+            ip = request.getHeader("Proxy-Client-IP"); 
+        } 
+        if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) { 
+            ip = request.getHeader("WL-Proxy-Client-IP"); 
+        } 
+        if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) { 
+            ip = request.getRemoteAddr(); 
+        } 
+        return ip; 
+    } 	
+	
+}

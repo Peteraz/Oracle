@@ -1,0 +1,37 @@
+package mis.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import mis.entity.Oracle;
+
+import org.springframework.stereotype.Repository;
+
+import common.BaseDAO;
+
+//业务逻辑DAO
+
+//spring自动注入
+@Repository
+public class OracleDAO extends BaseDAO<Oracle> {
+	//Oracle题目条数
+	public int Oracles(){
+		int n=0;
+		String hql="select count(0) from Oracle";
+		int x=this.getListByHQLN(hql);
+		n=x;
+		return n;
+	}
+	
+	public List<Oracle> ExamOracle(int n){
+		List<Oracle> result=new ArrayList<Oracle>();
+		String hql="from Oracle o order by rand()";				
+		
+		List<Oracle> lr=this.getListByHQLL(hql , n);   	// 使用basedao封装的getListByHQLT
+		if(lr!=null && lr.size()>0)
+			result=lr;
+		return result;
+	}
+}

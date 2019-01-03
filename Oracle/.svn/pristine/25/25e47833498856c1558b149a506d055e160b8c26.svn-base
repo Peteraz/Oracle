@@ -1,0 +1,20 @@
+package mis.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import mis.entity.Oracle;
+
+import org.springframework.stereotype.Repository;
+
+import common.BaseDAO;
+
+//业务逻辑DAO
+
+//spring自动注入
+@Repository
+public class OracleDAO extends BaseDAO<Oracle> {
+
+}
